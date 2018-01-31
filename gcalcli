@@ -166,8 +166,8 @@ Usage:
                               'notify-send -u critical -a gcalcli %%s'
 '''
 
-__API_CLIENT_ID__ = '232867676714.apps.googleusercontent.com'
-__API_CLIENT_SECRET__ = '3tZSxItw6_VnZMezQwC8lUqy'
+__API_CLIENT_ID__ = 'id'
+__API_CLIENT_SECRET__ = 'secret'
 
 # These are standard libraries and should never fail
 import sys
@@ -183,6 +183,8 @@ import json
 import random
 from datetime import datetime, timedelta, date
 from unicodedata import east_asian_width
+
+os.environ['TZ'] = "PST+08PDT,M4.1.0,M10.5.0"
 
 # Required 3rd party libraries
 try:
