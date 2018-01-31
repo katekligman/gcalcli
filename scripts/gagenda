@@ -1,0 +1,29 @@
+#!/bin/bash
+# copied from http://www.linuxjournal.com/content/command-line-cloud-gcalcli?page=0,1
+# set crontab to * * * * * /usr/local/bin/gagenda
+# set ~/.screerc to:
+# backtick 111 37 37 cat /tmp/gagenda
+# backtick 112 37 37 cat /tmp/gagenda-warning
+# backtick 113 37 37 cat /tmp/gagenda-urgent
+# hardstatus string '|%{= w}%111`%{+b y}%112`%{+b r}%113`%{-}%{= w}|'
+
+TZ="PST+08PDT,M4.1.0,M10.5.0"
+
+# first look for urgent events occurring 
+# in the next five minutes
+gcalcli --nocolor --nostarted agenda "`date`" "`date -d 'now + 5 minutes'`" | grep -v 'No Events' | head -2 | tail -1 | grep -v '^$' > /tmp/gagenda-urgent
+# if there are no urgent events, look for warning 
+# events in the next 10 minutes
+if [ ! -s /tmp/gagenda-urgent ]; then
+  gcalcli --nocolor --nostarted agenda "`date`" "`date -d 'now + 10 minutes'`" | grep -v 'No Events' | head -2 | tail -1 | grep -v '^$' > /tmp/gagenda-warning
+# if there are no warning events, just grab the next 
+# event for the day
+  if [ ! -s /tmp/gagenda-warning ]; then
+    gcalcli --nocolor --nostarted agenda "`date`" 11:59pm | grep -v 'No Events' | head -2 | tail -1 | grep -v '^$' > /tmp/gagenda
+  else
+    cat /dev/null > /tmp/gagenda
+  fi
+else
+  cat /dev/null > /tmp/gagenda-warning
+  cat /dev/null > /tmp/gagenda
+fi
